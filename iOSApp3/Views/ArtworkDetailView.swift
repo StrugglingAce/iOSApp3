@@ -98,37 +98,29 @@ struct ArtworkDetailView: View {
     }
 
     private var heroImage: some View {
-        AsyncImage(url: display.thumbnailURL) { phase in
-            switch phase {
-            case .empty:
-                Rectangle()
-                    .fill(Color(.systemGray6))
-                    .frame(height: 300)
-                    .overlay { ProgressView() }
-
-            case .success(let image):
-                image
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: .infinity)
-
-            case .failure:
-                Rectangle()
-                    .fill(Color(.systemGray6))
-                    .frame(height: 200)
-                    .overlay {
-                        VStack(spacing: 8) {
-                            Image(systemName: "photo")
-                                .font(.system(size: 36))
-                            Text("Image not available")
-                                .font(.caption)
-                        }
-                        .foregroundColor(.secondary)
+        ArticImageView(url: display.thumbnailURL) { image in
+            image
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: .infinity)
+        } placeholder: {
+            Rectangle()
+                .fill(Color(.systemGray6))
+                .frame(height: 300)
+                .overlay { ProgressView() }
+        } failure: {
+            Rectangle()
+                .fill(Color(.systemGray6))
+                .frame(height: 200)
+                .overlay {
+                    VStack(spacing: 8) {
+                        Image(systemName: "photo")
+                            .font(.system(size: 36))
+                        Text("Image not available")
+                            .font(.caption)
                     }
-
-            @unknown default:
-                EmptyView()
-            }
+                    .foregroundColor(.secondary)
+                }
         }
     }
 }

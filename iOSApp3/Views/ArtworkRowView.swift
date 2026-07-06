@@ -15,33 +15,22 @@ struct ArtworkRowView: View {
     var body: some View {
         HStack(spacing: 14) {
 
-            // AsyncImage loads the thumbnail from ARTIC's IIIF server.
-            // It handles the loading and error states internally.
-            AsyncImage(url: artwork.thumbnailURL) { phase in
-                switch phase {
-                case .empty:
-                    // Shown while the image is downloading
-                    Rectangle()
-                        .fill(Color(.systemGray5))
-                        .overlay { ProgressView() }
-
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFill()
-
-                case .failure:
-                    // Shown if the image URL fails to load
-                    Rectangle()
-                        .fill(Color(.systemGray5))
-                        .overlay {
-                            Image(systemName: "photo")
-                                .foregroundColor(.secondary)
-                        }
-
-                @unknown default:
-                    EmptyView()
-                }
+            // ARTIC's image server expects request headers, so use our custom loader.
+            ArticImageView(url: artwork.thumbnailURL) { image in
+                image
+                    .resizable()
+                    .scaledToFill()
+            } placeholder: {
+                Rectangle()
+                    .fill(Color(.systemGray5))
+                    .overlay { ProgressView() }
+            } failure: {
+                Rectangle()
+                    .fill(Color(.systemGray5))
+                    .overlay {
+                        Image(systemName: "photo")
+                            .foregroundColor(.secondary)
+                    }
             }
             .frame(width: 70, height: 70)
             .clipShape(RoundedRectangle(cornerRadius: 8))
